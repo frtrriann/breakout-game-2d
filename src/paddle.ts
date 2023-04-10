@@ -7,7 +7,7 @@ export class Paddle implements MovableGameObjectInterface {
   x = 0;
   y = 0;
   dx = 7;
-  height: number = 10;
+  height: number = 15;
   width: number = 75;
   rightPressed: boolean = false;
   leftPressed: boolean = false;
@@ -71,13 +71,13 @@ export class Paddle implements MovableGameObjectInterface {
     createRoundRect(
       this.ctx,
       this.x,
-      this.canvas.height - this.height,
+      this.y,
       this.width,
       this.height,
       4
     );
 
-    this.ctx.fillStyle = "#0095DD";
+    this.ctx.fillStyle = "#4b4b4b";
     this.ctx.fill();
     this.ctx.closePath();
   }

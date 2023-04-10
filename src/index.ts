@@ -1,6 +1,9 @@
 import { Ball } from "./ball";
 import { Paddle } from "./paddle";
 import { Bricks } from "./bricks";
+import { GameLoop } from "./game-loop";
+import { Score } from "./score";
+import { Lives } from "./lives";
 
 class Game {
   canvas: HTMLCanvasElement;
@@ -8,9 +11,9 @@ class Game {
   ball: Ball;
   paddle: Paddle;
   bricks: Bricks;
-  pause: boolean = false;
-  score: number = 0;
-  lives: number = 3;
+  score: Score;
+  game: GameLoop
+  lives: Lives;
   constructor() {
     this.canvas = document.createElement("canvas");
     this.canvas.width = 480;
@@ -19,8 +22,11 @@ class Game {
     this.ball = new Ball(this.canvas, this.ctx);
     this.paddle = new Paddle(this.canvas, this.ctx);
     this.bricks = new Bricks(this.canvas, this.ctx);
+    this.score = new Score(this.canvas, this.ctx)
+    this.lives = new Lives(this.canvas, this.ctx)
     document.body.appendChild(this.canvas);
-    this.draw();
+    this.game = new GameLoop(this.update.bind(this), this.draw.bind(this));
+    this.game.play()
   }
 
   wallCollisionDetection() {
@@ -31,17 +37,15 @@ class Game {
       ) {
         this.ball.revertYDirection();
       } else {
-        this.lives = this.lives - 1;
-        console.warn(this.lives)
-        if (!this.lives) {
-          this.pause = true;
+        this.lives.decreaseLives()
+        if (!this.lives.value) {
+          this.game.pause();
           alert("GAME OVER");
           document.location.reload();
         } else {
-          this.paddle.setInitialPosition()
-          this.ball.setInitialPosition()
+          this.paddle.setInitialPosition();
+          this.ball.setInitialPosition();
         }
-
       }
     }
   }
@@ -49,24 +53,21 @@ class Game {
   brickCollisionDetection() {
     if (this.bricks.detectBallCollision(this.ball.x, this.ball.y)) {
       this.ball.revertYDirection();
-      this.score = this.score + 1;
-      if (this.score == this.bricks.rowCount * this.bricks.columnCount) {
+      this.score.increaseScore();
+      if (this.score.score == this.bricks.rowCount * this.bricks.columnCount) {
         alert("YOU WIN, CONGRATULATIONS!");
         document.location.reload();
       }
     }
   }
 
-  drawScore() {
-    this.ctx.font = "16px Arial";
-    this.ctx.fillStyle = "#0095DD";
-    this.ctx.fillText(`Score: ${this.score}`, 8, 20);
-  }
 
-  drawLives() {
-    this.ctx.font = "16px Arial";
-    this.ctx.fillStyle = "#0095DD";
-    this.ctx.fillText(`❤️ ${this.lives}`, this.canvas.width-65, 20);
+  update() {
+    this.ball.setDirection();
+    this.brickCollisionDetection();
+    this.wallCollisionDetection();
+    this.ball.calcNewPosition();
+    this.paddle.calcNewPosition();
   }
 
   draw() {
@@ -74,16 +75,8 @@ class Game {
     this.ball.draw();
     this.paddle.draw();
     this.bricks.draw();
-    this.ball.setDirection();
-    this.brickCollisionDetection();
-    this.wallCollisionDetection();
-    this.ball.calcNewPosition();
-    this.paddle.calcNewPosition();
-    this.drawScore();
-    this.drawLives()
-    if (!this.pause) {
-      window.requestAnimationFrame(this.draw.bind(this));
-    }
+    this.score.draw();
+    this.lives.draw();
   }
 }
 
