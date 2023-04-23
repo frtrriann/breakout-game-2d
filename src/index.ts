@@ -25,6 +25,7 @@ class Game {
     this.score = new Score(this.canvas, this.ctx)
     this.lives = new Lives(this.canvas, this.ctx)
     document.body.appendChild(this.canvas);
+    window.screen.orientation.lock('portrait')
     this.game = new GameLoop(this.update.bind(this), this.draw.bind(this));
     this.game.play()
   }
