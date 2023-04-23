@@ -17,7 +17,7 @@ class Game {
   constructor() {
     this.canvas = document.createElement("canvas");
     this.canvas.width = 480;
-    this.canvas.height = 720;
+    this.canvas.height = 640;
     this.ctx = this.canvas.getContext("2d")!;
     this.ball = new Ball(this.canvas, this.ctx);
     this.paddle = new Paddle(this.canvas, this.ctx);
