@@ -27,11 +27,10 @@ jobs:
           submodules: true  # TODO remove this if not using submodules in Hexo
 
       - name: Install 🔧
-        run: npm install
+        run: npm ci
 
       - name: Build 🏗️
         run: |
-          npm clean
           npm build
       - name: Deploy to GH Pages 🚀
         uses: peaceiris/actions-gh-pages@v3
